@@ -1,93 +1,73 @@
-# twitch-bot [![CircleCI](https://circleci.com/gh/kritzware/twitch-bot.svg?style=svg&circle-token=3d338af28058e84dde13bee88751a50f55aefab3)](https://circleci.com/gh/kritzware/twitch-bot)
-Easily create chat bots for Twitch.tv
+# Better TTB
+Its *gooder* then the other one
 
 ## Install
 Install via NPM
 ```
-$ npm install twitch-bot
+$ npm install better-ttb
 ```
 
 ## Example
 ```javascript
-const TwitchBot = require('twitch-bot')
+const TwitchClient = require('better-ttb')
 
-const Bot = new TwitchBot({
-  username: 'Kappa_Bot',
-  oauth: 'oauth:dwiaj91j1KKona9j9d1420',
+const Client = new TwitchClient.{
+  username: 'Xeno_Pog',
+  oauth: 'oauth:how_how_is_he_pogging',
   channels: ['twitch']
 })
 
-Bot.on('join', channel => {
+Client.on('join', channel => {
   console.log(`Joined channel: ${channel}`)
 })
 
-Bot.on('error', err => {
+Client.on('error', err => {
   console.log(err)
 })
 
-Bot.on('message', chatter => {
-  if(chatter.message === '!test') {
-    Bot.say('Command executed! PogChamp')
+Client.on('message', message => {
+  if(message.message === '!test') {
+    Client.say('Command executed! PogChamp')
   }
 })
 
 ```
 
-## Index
-- [Events](https://github.com/kritzware/twitch-bot#events)
-  - [`connected`](https://github.com/kritzware/twitch-bot#connected---)
-  - [`join`](https://github.com/kritzware/twitch-bot#join---)
-  - [`part`](https://github.com/kritzware/twitch-bot#part---)
-  - [`message`](https://github.com/kritzware/twitch-bot#message---chatter-object)
-  - [`timeout`](https://github.com/kritzware/twitch-bot#timeout---event-object)
-  - [`subscription`](https://github.com/kritzware/twitch-bot#subscription---event-object)
-  - [`ban`](https://github.com/kritzware/twitch-bot#ban---event-object)
-  - [`error`](https://github.com/kritzware/twitch-bot#error---err-object)
-  - [`close`](https://github.com/kritzware/twitch-bot#close---)
-- [Methods](https://github.com/kritzware/twitch-bot#methods)
-  - [`join()`](https://github.com/kritzware/twitch-bot#join-channelname--string))
-  - [`part()`](https://github.com/kritzware/twitch-bot#part-channelname--string)  
-  - [`say()`](https://github.com/kritzware/twitch-bot#saymessage-string-err-callback)
-  - [`timeout()`](https://github.com/kritzware/twitch-bot#timeoutusername-string-duration-int-reason-string)
-  - [`ban()`](https://github.com/kritzware/twitch-bot#banusername-string-reason-string)
-  - [`close()`](https://github.com/kritzware/twitch-bot#close)
-- [Tests](https://github.com/kritzware/twitch-bot#running-tests)
-
 ## Events
-### `connected - ()`
+### `connected - (client: TwitchBot)`
 This event is emitted when the bot has connected to the IRC server.
 #### Usage
 ```javascript
-Bot.on('connected', () => ... )
+Client.on('connected', client => ... )
 ```
 
-### `join - ()`
+### `join - (channel: Object)`
 This event is emitted when a channel has been joined successfully.
 #### Usage
 ```javascript
-Bot.on('join', channel => ... )
+Client.on('join', channel => ... )
 ```
 
-### `part - ()`
+### `part - (channel: Channel)`
 This event is emitted when a channel has been left successfully.
 #### Usage
 ```javascript
-Bot.on('part', channel => ... )
+Client.on('part', channel => ... )
 ```
 
 
-### `message - (chatter: Object)`
-Emitted when a `PRIVSMSG` event is sent over IRC. Chatter object attributes can be found on the [Twitch developers site](https://dev.twitch.tv/docs/v5/guides/irc/#privmsg-twitch-tags)
+### `message - (message: Object)`
+Emitted when a `PRIVSMSG` event is sent over IRC. The message (Chatter) object attributes can be found on the [Twitch developers site](https://dev.twitch.tv/docs/v5/guides/irc/#privmsg-twitch-tags)
 
 #### Usage
 ```javascript
-Bot.on('message', chatter => ... )
+Client.on('message', message => ... )
 ```
 
 #### Example Response
 ```javascript
 { color: '#3C78FD',
-  display_name: 'kritzware',
+  display_name: 'XenoBranch',
   emotes: '88:18-25',
   id: 'c5ee7248-3cea-43f5-ae44-2916d9a1325a',
   mod: true,
@@ -99,7 +79,7 @@ Bot.on('message', chatter => ... )
   user_id: 44667418,
   user_type: 'mod',
   badges: { broadcaster: 1, subscriber: 0 },
-  channel: '#kritzware',
+  channel: '#XenoBranch',
   message: 'This is a message PogChamp',
   username: 'Kritzware' }
   ```
@@ -109,12 +89,12 @@ Emitted when a user is timed out in the chat. The `ban_reason` attribute is `nul
 
 #### Chat Trigger
 ```javascript
-kritzware: "/timeout {user} {duration} {reason}"
+XenoBranch: "/timeout {user} {duration} {reason}"
 ```
 
 #### Usage
 ```javascript
-Bot.on('timeout', event => ... )
+Client.on('timeout', event => ... )
 ```
 
 #### Example Response
@@ -125,7 +105,7 @@ Bot.on('timeout', event => ... )
   target_user_id: 37798112,
   tmi_sent_ts: 1503346029068,
   type: 'timeout',
-  channel: '#kritzware',
+  channel: '#XenoBranch',
   target_username: 'blarev' }
 ```
 
@@ -134,7 +114,7 @@ Emitted when a user subscribes to a channel and chooses to share the subscriptio
 
 #### Usage
 ```javascript
-Bot.on('subscription', event => ... )
+Client.on('subscription', event => ... )
 ```
 
 #### Example Response
@@ -172,12 +152,12 @@ Emitted when a user is permanently banned from the chat. The `ban_reason` attrib
 
 #### Usage
 ```javascript
-Bot.on('ban', event => ... )
+Client.on('ban', event => ... )
 ```
 
 #### Chat Trigger
 ```javascript
-kritzware: "/ban {user} {reason}"
+XenoBranch: "/ban {user} {reason}"
 ```
 
 #### Example Response
@@ -187,7 +167,7 @@ kritzware: "/ban {user} {reason}"
   target_user_id: 37798112,
   tmi_sent_ts: 1503346078025,
   type: 'ban',
-  channel: '#kritzware',
+  channel: '#XenoBranch',
   target_username: 'blarev' }
 ```
 
@@ -221,7 +201,7 @@ Response:
 
 #### Usage
 ```javascript
-Bot.on('error', err => ... )
+Client.on('error', err => ... )
 ```
 
 #### Example Response
@@ -230,10 +210,10 @@ Bot.on('error', err => ... )
 ```
 
 ### `close - ()`
-This event is emitted when the irc connection is destroyed via the `Bot.close()` method.
+This event is emitted when the irc connection is destroyed via the `Client.close()` method.
 #### Usage
 ```javascript
-Bot.on('close', () => {
+Client.on('close', () => {
   console.log('closed bot irc connection')
 })
 ```
@@ -244,10 +224,11 @@ Attempts to join a channel. If successful, emits the 'join' event.
 
 #### Example
 ```javascript
-Bot.on('join', channel => {
-  console.log(`Bot joined ${channel}`)
-})
-Bot.join('channel2')
+Client.on('join', channel => {
+  console.log(`Client joined ${channel}`);
+});
+
+Client.join('channel2')
 ```
 
 ### `part(channel: String)`
@@ -255,10 +236,11 @@ Attempts to part from a channel. If successful, emits the 'part' event.
 
 #### Example
 ```javascript
-Bot.on('part', channel => {
-  console.log(`Bot left ${channel}`)
-})
-Bot.part('channel2')
+Client.on('part', channel => {
+  console.log(`Client left ${channel}`);
+});
+
+Client.part('channel2');
 ```
 
 ### `say(message: String, channel: []Channel, err: Callback)`
@@ -266,17 +248,17 @@ Send a message in the currently connected Twitch channel. `channels` parameter n
 
 #### Example
 ```javascript
-Bot.say('This is a message')
+Client.say('This is a message');
 
-Bot.say('Pretend this message is over 500 characters', err => {
+Client.say('your mum (okay so the joke is that she is so incredibly large that she is longer than the 500 character limit)', err => {
   sent: false,
   message: 'Exceeded PRIVMSG character limit (500)'
   ts: '2017-08-13T16:38:54.989Z'
 })
 
 // If connected to multiple channels
-Bot.say('message to #channel1', 'channel1')
-Bot.say('message to #channel2', 'channel2')
+Client.say('message to #channel1', 'channel1')
+Client.say('message to #channel2', 'channel2')
 ```
 
 ### `timeout(username: String, channel: []Channel, duration: int, reason: String)`
@@ -284,14 +266,14 @@ Timeout a user from the chat. `channels` parameter not needed when connected to 
 
 #### Example
 ```javascript
-Bot.timeout('kritzware', 10)
-// "kritzware was timed out for 10 seconds"
+Client.timeout('XenoBranch', 10)
+// "XenoBranch was timed out for 10 seconds"
 
-Bot.timeout('kritzware', 5, 'Using a banned word')
-// "kritzware was timed out for 5 seconds, reason: 'Using a banned word'"
+Client.timeout('XenoBranch', 5, 'Using a banned word (L)')
+// "XenoBranch was timed out for 5 seconds, reason: 'Using a banned word (L)'"
 
-Bot.on('message', chatter => {
-  if(chatter.message === 'xD') Bot.timeout(chatter.username, 10)
+Client.on('message', message => {
+  if(message.message === 'xD') Client.timeout(message.username, 10)
 })
 ```
 
@@ -300,36 +282,21 @@ Permanently ban a user from the chat. `channels` parameter not needed when conne
 
 #### Example
 ```javascript
-Bot.ban('kritzware')
-// "kritzware is now banned from the room"
+Client.ban('XenoBranch')
+// "XenoBranch is now banned from the room"
 
-Bot.timeout('kritzware', 'Using a banned word')
-// "kritzware is now banned from the room, reason: 'Using a banned word'"
+Client.timeout('XenoBranch', 'Using a banned word (L)')
+// "XenoBranch is now banned from the room, reason: 'Using a banned word (L)'"
 
-Bot.on('message', chatter => {
-  if(chatter.message === 'Ban me!') Bot.ban(chatter.username)
+Client.on('message', message => {
+  if(message.message === 'Ban me!') Client.ban(message.username)
 })
 ```
 
 ### `close()`
-Closes the Twitch irc connection. Bot will be removed from the Twitch channel AND the irc server.
+Closes the Twitch irc connection. Client will be removed from the Twitch channel AND the irc server.
 
 #### Example
 ```javascript
-Bot.close()
-```
-
-## Running Tests
-Running the test suite requires at least two twitch accounts, one moderator account and one normal account. The channel used must be the same - This is so timeout/ban methods can be tested with the mod account. Using these two accounts, set the following environment variables:
-```javascript
-TWITCHBOT_USERNAME=mod_username
-TWITCHBOT_OAUTH=oauth:mod-oauth-token
-TWITCHBOT_CHANNEL=mod_channel
-TWITCHBOT_USERNAME_NON_MOD=non_mod_username
-TWITCHBOT_OAUTH_NON_MOD=oauth:non-mod-oauth-token
-TWITCHBOT_CHANNEL_NON_MOD=mod_channel
-```
-To run the tests (powered with [Mocha](https://mochajs.org/)), use the following command:
-```bash
-yarn test
+Client.close()
 ```
