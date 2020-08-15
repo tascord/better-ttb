@@ -1,6 +1,8 @@
 const chalk = require('chalk');
 
 module.exports = (message) => {
-    console.log(message);
-    message.client.say('bruh');
+
+    // message.channel.send('pogger');
+    message.reply('how');
+
 }

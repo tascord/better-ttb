@@ -4,11 +4,9 @@ const config = require('./config.json');
 const client = new TwitchBot({
   username: config.username,
   oauth: config.oauth,
-  channels: ['caykeXD', 'Blundxl']
+  channels: ['caykeXD']
 });
 
 client.on('connected', require('./events/connected.js'));
 client.on('message', require('./events/message.js'));
 client.on('err', require('./events/error.js'));
-
-console.log(require('fakeid').username(require('fakeid').name(false)));

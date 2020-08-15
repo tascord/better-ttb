@@ -18,7 +18,7 @@ const Client = new TwitchClient.{
 })
 
 Client.on('join', channel => {
-  console.log(`Joined channel: ${channel}`)
+  console.log(`Joined channel: ${channel.name}`)
 })
 
 Client.on('error', err => {
@@ -26,8 +26,8 @@ Client.on('error', err => {
 })
 
 Client.on('message', message => {
-  if(message.message === '!test') {
-    Client.say('Command executed! PogChamp')
+  if(message.content === '!test') {
+    Client.send('Command executed! PogChamp')
   }
 })
 
@@ -38,21 +38,21 @@ Client.on('message', message => {
 This event is emitted when the bot has connected to the IRC server.
 #### Usage
 ```javascript
-Client.on('connected', client => ... )
+Client.on('connected', client => ... );
 ```
 
-### `join - (channel: Object)`
+### `join - (channel: Channel)`
 This event is emitted when a channel has been joined successfully.
 #### Usage
 ```javascript
-Client.on('join', channel => ... )
+Client.on('join', channel => ... );
 ```
 
 ### `part - (channel: Channel)`
 This event is emitted when a channel has been left successfully.
 #### Usage
 ```javascript
-Client.on('part', channel => ... )
+Client.on('part', channel => ... );
 ```
 
 
@@ -61,12 +61,13 @@ Emitted when a `PRIVSMSG` event is sent over IRC. The message (Chatter) object a
 
 #### Usage
 ```javascript
-Client.on('message', message => ... )
+Client.on('message', message => ... );
 ```
 
 #### Example Response
 ```javascript
-{ color: '#3C78FD',
+{
+  color: '#3C78FD',
   display_name: 'XenoBranch',
   emotes: '88:18-25',
   id: 'c5ee7248-3cea-43f5-ae44-2916d9a1325a',
@@ -79,9 +80,11 @@ Client.on('message', message => ... )
   user_id: 44667418,
   user_type: 'mod',
   badges: { broadcaster: 1, subscriber: 0 },
-  channel: '#XenoBranch',
+  channel: { name: '#XenoBranch', send: { ... } },
   message: 'This is a message PogChamp',
-  username: 'Kritzware' }
+  username: 'XenoBranch',
+  client: TwitchBot { ... }
+}
   ```
 
 ### `timeout - (event: Object)`
@@ -99,14 +102,16 @@ Client.on('timeout', event => ... )
 
 #### Example Response
 ```javascript
-{ ban_duration: 10, // seconds
+{
+  ban_duration: 10, // seconds
   ban_reason: 'Using a banned word',
   room_id: 44667418,
   target_user_id: 37798112,
   tmi_sent_ts: 1503346029068,
   type: 'timeout',
-  channel: '#XenoBranch',
-  target_username: 'blarev' }
+  channel: { name: '#XenoBranch', send: { ... } },
+  target_username: 'serxka'
+}
 ```
 
 ### `subscription - (event: Object)`
@@ -120,30 +125,30 @@ Client.on('subscription', event => ... )
 #### Example Response
 ```javascript
 {
-  "badges": {
-   "broadcaster": 1,
-   "staff": 1,
-   "turbo": 1
+  badges: {
+   broadcaster: 1,
+   staff: 1,
+   turbo: 1
   },
-  "channel": "#dallas",
-  "color": "#008000",
-  "display_name": "ronni",
-  "emotes": null,
-  "id": "db25007f-7a18-43eb-9379-80131e44d633",
-  "login": "ronni",
-  "message": "Great stream -- keep it up!", // null if no message given
-  "mod": 0,
-  "msg_id": "resub",
-  "msg_param_months": 6,
-  "msg_param_sub_plan": "Prime",
-  "msg_param_sub_plan_name": "Prime",
-  "room_id": 1337,
-  "subscriber": 1,
-  "system_msg": "ronni has subscribed for 6 months!",
-  "tmi_sent_ts": 1507246572675,
-  "turbo": 1,
-  "user_id": 1337,
-  "user_type": "staff"
+  channel: { name: '#XenoBranch', send: { ... } },
+  color: '#008000',
+  display_name: 'bruh',
+  emotes: null,
+  id: 'db25007f-7a18-43eb-9379-80131e44d633',
+  login: 'bruh',
+  message: 'Great stream -- keep it up!', // null if no message given
+  mod: 0,
+  msg_id: 'resub',
+  msg_param_months: 6,
+  msg_param_sub_plan: 'Prime',
+  msg_param_sub_plan_name: 'Prime',
+  room_id: 1337,
+  subscriber: 1,
+  system_msg: 'bruh has subscribed for 6 months!',
+  tmi_sent_ts: 1507246572675,
+  turbo: 1,
+  user_id: 1337,
+  user_type: 'staff'
 }
 ```
 
@@ -162,13 +167,15 @@ XenoBranch: "/ban {user} {reason}"
 
 #### Example Response
 ```javascript
-{ ban_reason: 'Using a banned word',
+{
+  ban_reason: 'Using a banned word',
   room_id: 44667418,
   target_user_id: 37798112,
   tmi_sent_ts: 1503346078025,
   type: 'ban',
   channel: '#XenoBranch',
-  target_username: 'blarev' }
+  target_username: 'serxka'
+  }
 ```
 
 ### `error - (err: Object)`
@@ -214,8 +221,8 @@ This event is emitted when the irc connection is destroyed via the `Client.close
 #### Usage
 ```javascript
 Client.on('close', () => {
-  console.log('closed bot irc connection')
-})
+  console.log('closed bot irc connection');
+});
 ```
 
 ## Methods
@@ -225,43 +232,69 @@ Attempts to join a channel. If successful, emits the 'join' event.
 #### Example
 ```javascript
 Client.on('join', channel => {
-  console.log(`Client joined ${channel}`);
+  console.log(`Client joined ${channel.name}`);
 });
 
-Client.join('channel2')
+Client.join('channel2');
 ```
 
-### `part(channel: String)`
+### `part(channel: Object)`
 Attempts to part from a channel. If successful, emits the 'part' event.
 
 #### Example
 ```javascript
 Client.on('part', channel => {
-  console.log(`Client left ${channel}`);
+  console.log(`Client left ${channel.name}`);
 });
 
 Client.part('channel2');
 ```
 
-### `say(message: String, channel: []Channel, err: Callback)`
-Send a message in the currently connected Twitch channel. `channels` parameter not needed when connected to a single channel. An optional callback is provided for validating if the message was sent correctly.
+### `(Client | Channel).send(message: String, channel: []Channel, err: Callback)`
+Sends a message to the 'Channel' with an optional error callback.
+The channel is either:
+- Given Client.send()
+  - The currently connected channel
+  - The specified channel
+- Given Channel.send(), the Channel's well, channel.
 
 #### Example
 ```javascript
-Client.say('This is a message');
+Client.send('This is a message');
 
-Client.say('your mum (okay so the joke is that she is so incredibly large that she is longer than the 500 character limit)', err => {
+Client.send('your mum (okay so the joke is that she is so incredibly large that she is longer than the 500 character limit)', err => {
   sent: false,
   message: 'Exceeded PRIVMSG character limit (500)'
   ts: '2017-08-13T16:38:54.989Z'
 })
 
 // If connected to multiple channels
-Client.say('message to #channel1', 'channel1')
-Client.say('message to #channel2', 'channel2')
+Client.send('message to #channel1', 'channel1')
+Client.send('message to #channel2', 'channel2')
+
+// Responding without reply() because you dont like the formatting or smth
+Message.channel.send("Bruh weirdChamp");
+
 ```
 
-### `timeout(username: String, channel: []Channel, duration: int, reason: String)`
+### `Message.reply(message: String, err: Callback)`
+Responds to the author of the given Message object in the given message channel, prefixing the message with '@${author's username}, ${message}', where author's username is, well, the authors username, and message is your given message. An optional callback is provided for validating if the message was sent correctly.
+
+#### Example
+```javascript
+//IDK its hard to demonstrate this
+
+Message.reply('Listen here you fool, you buffon, you absoulute moron, you complete and utter daft punk.');
+
+Message.rply('i already did this joke', err => {
+  sent: false,
+  message: 'Exceeded PRIVMSG character limit (500)'
+  ts: '2017-08-13T16:38:54.989Z'
+})
+
+```
+
+### `timeout(username: Object, channel: []Channel, duration: int, reason: String)`
 Timeout a user from the chat. `channels` parameter not needed when connected to a single channel. Default `duration` is 600 seconds. Optional `reason` message.
 
 #### Example
@@ -273,7 +306,7 @@ Client.timeout('XenoBranch', 5, 'Using a banned word (L)')
 // "XenoBranch was timed out for 5 seconds, reason: 'Using a banned word (L)'"
 
 Client.on('message', message => {
-  if(message.message === 'xD') Client.timeout(message.username, 10)
+  if(message.content === 'boyfriend') Client.timeout(message.username, 10)
 })
 ```
 
@@ -289,7 +322,7 @@ Client.timeout('XenoBranch', 'Using a banned word (L)')
 // "XenoBranch is now banned from the room, reason: 'Using a banned word (L)'"
 
 Client.on('message', message => {
-  if(message.message === 'Ban me!') Client.ban(message.username)
+  if(message.content === 'simp') Client.ban(message.username)
 })
 ```
 
